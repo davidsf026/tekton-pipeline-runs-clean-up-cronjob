@@ -20,7 +20,7 @@ spec:
               name: cm-cj-pipelineruns-clean-up
             name: cm-cj-pipelineruns-clean-up
           containers:
-          - name: setup-gitea-container
+          - name: pipelineruns-clean-up
             image: quay.io/openshift/origin-jenkins-agent-base:latest
             imagePullPolicy: IfNotPresent
             command:
