@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cj-pipelineruns-clean-up
+spec:
+  schedule: "0 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: cj-pipelineruns-clean-up
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: sa-cj-pipelineruns-clean-up
+          volumes:
+          - configMap:
+              defaultMode: 420
+              name: cm-cj-pipelineruns-clean-up
+            name: cm-cj-pipelineruns-clean-up
+          containers:
+          - name: setup-gitea-container
+            image: quay.io/openshift/origin-jenkins-agent-base:latest
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - "source /tmp/cj-pipelineruns-clean-up.sh"
+            volumeMounts:
+            - mountPath: /tmp/cj-pipelineruns-clean-up.sh
+              name: cm-cj-pipelineruns-clean-up
+              subPath: cj-pipelineruns-clean-up.sh

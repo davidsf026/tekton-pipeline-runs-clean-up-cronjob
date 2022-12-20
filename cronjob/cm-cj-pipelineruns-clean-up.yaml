@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-cj-pipelineruns-clean-up
+data:
+  cj-pipelineruns-clean-up.sh: |-
+    #!/bin/bash
+
+    # TO CHANGE THE RETENTION TIME OF THE PIPELINERUNS, CHANGE THE VALUE "24 hours" BELLOW TO THE DESIRED, IT CAN BE IN "days", "hours", "minutes" AND "seconds"
+    oc get pipelinerun --no-headers -o=custom-columns=":.metadata.name,:.metadata.creationTimestamp,:.status.conditions[0].reason" | grep -v "Running" | awk '$2 <= "'$(date -d'now-24 hours' -Ins --utc | sed 's/+0000/Z/')'" { print $1 }' | xargs --no-run-if-empty oc delete pipelinerun
